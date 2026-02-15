@@ -20,7 +20,7 @@
     //  LEFT JOIN injections i ON p.id = i.patient_id
     //  GROUP BY p.id
     //  HAVING MAX(i.injection_date) IS NULL OR DATEDIFF(CURDATE(), MAX(i.injection_date)) > 365"
-    //if i add the patient without bite/injection it will not show as a overdue 
+    //if i add the patient without bite/injection it will not show as a overdue
     "SELECT p.id
     FROM patients p
     JOIN injections i ON p.id = i.patient_id
@@ -87,6 +87,8 @@
     </div>
 </nav>
 
+
+<div class="container mt-5">
  <div class="row mb-4">
         <div class="col-md-6">
             <form method="GET" class="d-flex align-items-center">
@@ -103,8 +105,6 @@
             </form>
         </div>
     </div>
-<div class="container mt-5">
-
     <!-- Summary Cards -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
