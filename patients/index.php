@@ -17,6 +17,8 @@
     mysqli_stmt_bind_param($stmt, "s", $like);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
+    // Close statement after fetching
+    mysqli_stmt_close($stmt);
 
     } else {
 
@@ -67,6 +69,11 @@
                 <button class="btn btn-primary-custom">Search</button>
             </div>
         </form>
+        <?php if (isset($_GET['success'])): ?>
+         <div class="alert alert-success">
+          <?php echo htmlspecialchars($_GET['success']); ?>
+             </div>
+            <?php endif; ?>
 
         <table class="table table-bordered table-hover">
             <thead class="table-light">
@@ -90,18 +97,14 @@
                             <td><?php echo htmlspecialchars($row['contact']); ?></td>
                             <td><?php echo htmlspecialchars($row['created_at']); ?></td>
 
-                            <td>
-                                <a href="edit.php?id=<?php echo $row['id']; ?>"
-                                   class="btn btn-sm btn-primary-custom me-1">
-                                    Edit
-                                </a>
-
-                                <a href="delete.php?id=<?php echo $row['id']; ?>"
-                                   class="btn btn-sm btn-danger me-1"
-                                   onclick="return confirm('Are you sure you want to delete this patient?');">
-                                    Delete
-                                </a>
-                            </td>
+                         <td>
+                            <a href="view.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-custom me-1">View</a>
+                            <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-custom me-1">Edit</a>
+                            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this patient?');">Delete</a>
+                            <?php endif; ?>
+                         </td>
                         </tr>
                     <?php endwhile; ?>
 
