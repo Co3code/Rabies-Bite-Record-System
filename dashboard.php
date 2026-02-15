@@ -49,21 +49,76 @@
      LIMIT 5"
     );
 
+    //     $search_query   = '';
+    //     $search_results = [];
+
+    //     if (isset($_GET['search']) && ! empty(trim($_GET['search']))) {
+    //     $search_query = trim($_GET['search']);
+    //     $stmt         = mysqli_prepare($conn, "SELECT id, fullname, age, sex, contact FROM patients WHERE fullname LIKE ?");
+    //     $like_search  = "%" . $search_query . "%";
+    //     mysqli_stmt_bind_param($stmt, "s", $like_search);
+    //     mysqli_stmt_execute($stmt);
+    //     $res = mysqli_stmt_get_result($stmt);
+
+    //     while ($row = mysqli_fetch_assoc($res)) {
+    //         $search_results[] = $row;
+    //     }
+    //     }
     $search_query   = '';
     $search_results = [];
 
     if (isset($_GET['search']) && ! empty(trim($_GET['search']))) {
+
     $search_query = trim($_GET['search']);
-    $stmt         = mysqli_prepare($conn, "SELECT id, fullname, age, sex, contact FROM patients WHERE fullname LIKE ?");
     $like_search  = "%" . $search_query . "%";
+
+    $stmt = mysqli_prepare($conn,
+        "SELECT
+            p.id,
+            p.fullname,
+            p.age,
+            p.sex,
+            p.contact,
+            MAX(i.injection_date) as last_injection
+        FROM patients p
+        LEFT JOIN injections i ON p.id = i.patient_id
+        WHERE p.fullname LIKE ?
+        GROUP BY p.id
+    ");
+
     mysqli_stmt_bind_param($stmt, "s", $like_search);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
     while ($row = mysqli_fetch_assoc($res)) {
+
+        // Compute status
+        if ($row['last_injection']) {
+
+            $last_date = new \DateTime($row['last_injection']);
+            $today     = new \DateTime();
+            $diff_days = $today->diff($last_date)->days;
+
+            if ($diff_days < 30) {
+                $row['status'] = "Up to date";
+                $row['color']  = "success";
+            } elseif ($diff_days < 365) {
+                $row['status'] = "Needs booster";
+                $row['color']  = "warning";
+            } else {
+                $row['status'] = "Overdue";
+                $row['color']  = "danger";
+            }
+
+        } else {
+            $row['status'] = "No injection";
+            $row['color']  = "secondary";
+        }
+
         $search_results[] = $row;
     }
     }
+
 ?>
 
 <!DOCTYPE html>
@@ -138,40 +193,59 @@
 
     <!-- Search Results -->
     <?php if (! empty($search_results)): ?>
-        <div class="row mt-4">
-            <div class="col-12">
-                <h5>Search Results for "<?php echo htmlspecialchars($search_query); ?>"</h5>
-                <table class="table table-bordered table-hover table-sm text-center">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Patient Name</th>
-                            <th>Age</th>
-                            <th>Sex</th>
-                            <th>Contact</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($search_results as $patient): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($patient['fullname']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['age']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['sex']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['contact']); ?></td>
-                                <td>
-                                    <a href="patients/view.php?id=<?php echo $patient['id']; ?>" class="btn btn-sm btn-info">View</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    <?php elseif (isset($_GET['search'])): ?>
-        <div class="alert alert-warning mt-4">
-            No patients found for "<?php echo htmlspecialchars($search_query); ?>"
-        </div>
-    <?php endif; ?>
+<div class="row mt-4">
+    <div class="col-12">
+        <h5>Search Results for "<?php echo htmlspecialchars($search_query); ?>"</h5>
+
+        <table class="table table-bordered table-hover table-sm text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>Patient</th>
+                    <th>Age</th>
+                    <th>Sex</th>
+                    <th>Last Injection</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($search_results as $patient): ?>
+                    <tr>
+                        <td>
+                            <a href="patients/view.php?id=<?php echo $patient['id']; ?>">
+                                <?php echo htmlspecialchars($patient['fullname']); ?>
+                            </a>
+                        </td>
+                        <td><?php echo htmlspecialchars($patient['age']); ?></td>
+                        <td><?php echo htmlspecialchars($patient['sex']); ?></td>
+                        <td>
+                            <?php echo $patient['last_injection']
+                                    ? htmlspecialchars($patient['last_injection'])
+                                : 'N/A'; ?>
+                        </td>
+                        <td>
+                            <span class="badge bg-<?php echo $patient['color']; ?>">
+                                <?php echo $patient['status']; ?>
+                            </span>
+                        </td>
+                        <td>
+                            <a href="patients/view.php?id=<?php echo $patient['id']; ?>"
+                               class="btn btn-sm btn-custom">
+                               View
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php elseif (isset($_GET['search'])): ?>
+    <div class="alert alert-warning mt-4">
+        No patients found for "<?php echo htmlspecialchars($search_query); ?>"
+    </div>
+<?php endif; ?>
+
 
     <!-- Recent Bites & Injections -->
     <div class="row mt-4">
