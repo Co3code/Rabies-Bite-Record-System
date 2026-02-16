@@ -2,6 +2,7 @@
     require "config/db.php";
     require "config/auth.php";
 
+    date_default_timezone_set('Asia/Manila');
     // Protect page
     if (! isset($_SESSION['user_id'])) {
     header("Location: auth/login.php");
@@ -15,21 +16,25 @@
 
     // Overdue injections
     $overdue_result = mysqli_query($conn,
-    // "SELECT p.id
-    //  FROM patients p
-    //  LEFT JOIN injections i ON p.id = i.patient_id
-    //  GROUP BY p.id
-    //  HAVING MAX(i.injection_date) IS NULL OR DATEDIFF(CURDATE(), MAX(i.injection_date)) > 365"
-    //if i add the patient without bite/injection it will not show as a overdue
     "SELECT p.id
-    FROM patients p
-    JOIN injections i ON p.id = i.patient_id
-    GROUP BY p.id
-    HAVING DATEDIFF(CURDATE(), MAX(i.injection_date)) > 365"
-
+     FROM patients p
+     LEFT JOIN injections i ON p.id = i.patient_id
+     GROUP BY p.id
+     HAVING MAX(i.injection_date) IS NOT NULL AND DATEDIFF(CURDATE(), MAX(i.injection_date)) > 365"
     );
     $overdue_count = mysqli_num_rows($overdue_result);
-    $overdue_class = $overdue_count > 0 ? 'bg-danger text-white' : 'bg-success text-white';
+
+    // Patients who never had injections
+    $never_injected_result = mysqli_query($conn,
+    "SELECT p.id
+     FROM patients p
+     LEFT JOIN injections i ON p.id = i.patient_id
+     GROUP BY p.id
+     HAVING MAX(i.injection_date) IS NULL"
+    );
+    $never_injected_count = mysqli_num_rows($never_injected_result);
+    $overdue_class        = $overdue_count > 0 ? 'bg-danger text-white' : 'bg-success text-white';
+    $never_injected_class = $never_injected_count > 0 ? 'bg-warning text-white' : 'bg-success text-white';
 
     // Fetch recent bites (latest 5)
     $recent_bites = mysqli_query($conn,
@@ -49,21 +54,6 @@
      LIMIT 5"
     );
 
-    //     $search_query   = '';
-    //     $search_results = [];
-
-    //     if (isset($_GET['search']) && ! empty(trim($_GET['search']))) {
-    //     $search_query = trim($_GET['search']);
-    //     $stmt         = mysqli_prepare($conn, "SELECT id, fullname, age, sex, contact FROM patients WHERE fullname LIKE ?");
-    //     $like_search  = "%" . $search_query . "%";
-    //     mysqli_stmt_bind_param($stmt, "s", $like_search);
-    //     mysqli_stmt_execute($stmt);
-    //     $res = mysqli_stmt_get_result($stmt);
-
-    //     while ($row = mysqli_fetch_assoc($res)) {
-    //         $search_results[] = $row;
-    //     }
-    //     }
     $search_query   = '';
     $search_results = [];
 
@@ -132,6 +122,25 @@
 
 <nav class="navbar navbar-expand-lg navbar-custom px-3">
     <a class="navbar-brand text-white">Rabies System</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+<div class="collapse navbar-collapse" id="navbarContent">
+    <form method="GET" class="d-flex  align-items-center me-auto my-2 my-lg-0">   <!--   align-items-center -->
+                <input
+                    type="text"
+                    name="search"
+                    class="form-control me-2 rounded-pill border-primary  w-100 w-lg-auto"
+                    placeholder="Search by patient name"
+                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
+                >
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    Search
+                </button>
+            </form>
     <div class="ms-auto text-white">
         Welcome, <?php echo htmlspecialchars($_SESSION['fullname']); ?>
         | <a href="patients/index.php" class="text-info">Patients</a>
@@ -140,26 +149,12 @@
         <?php endif; ?>
         | <a href="auth/logout.php" class="text-warning">Logout</a>
     </div>
+</div>
+
 </nav>
 
 
 <div class="container mt-5">
- <div class="row mb-4">
-        <div class="col-md-6">
-            <form method="GET" class="d-flex align-items-center">
-                <input
-                    type="text"
-                    name="search"
-                    class="form-control me-2 rounded-pill border-primary"
-                    placeholder="Search by patient name"
-                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
-                >
-                <button type="submit" class="btn btn-primary-custom rounded-pill px-4">
-                    Search
-                </button>
-            </form>
-        </div>
-    </div>
     <!-- Summary Cards -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
@@ -190,7 +185,15 @@
             </div>
         </div>
     </div>
-
+<!-- Summary Cards Row 2 -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card card-custom p-3 text-center <?php echo $never_injected_class; ?>">
+            <h5>Never Injected</h5>
+            <h2><?php echo $never_injected_count; ?></h2>
+        </div>
+    </div>
+</div>
     <!-- Search Results -->
     <?php if (! empty($search_results)): ?>
 <div class="row mt-4">
@@ -311,5 +314,7 @@
     </div>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
