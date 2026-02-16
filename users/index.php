@@ -5,6 +5,7 @@
     require_admin(); // Only admin allowed
 
     $result = mysqli_query($conn, "SELECT id, fullname, username, role FROM users");
+
 ?>
 
 <!DOCTYPE html>
@@ -33,10 +34,11 @@
 
         <hr>
 
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success">
-                <?php echo htmlspecialchars($_GET['success']); ?>
-            </div>
+
+        <?php if (isset($_GET['message'])): ?>
+          <div class="alert alert-info">
+         <?php echo htmlspecialchars($_GET['message']); ?>
+          </div>
         <?php endif; ?>
 
         <table class="table table-bordered mt-3">
@@ -45,6 +47,8 @@
                     <th>Fullname</th>
                     <th>Username</th>
                     <th>Role</th>
+                    <th>Action</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +62,14 @@
                         <?php else: ?>
                             <span class="badge bg-secondary">Staff</span>
                         <?php endif; ?>
+                    </td>
+                    <td>
+                        <!-- delete form-->
+                         <form action="delete.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                            <input type="hidden" name="id"  value="<?php echo $row['id']; ?>">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+
+                         </form>
                     </td>
                 </tr>
                 <?php endwhile; ?>
