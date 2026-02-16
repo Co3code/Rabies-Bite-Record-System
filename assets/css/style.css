@@ -14,7 +14,7 @@ body {
 .navbar-custom span,
 .navbar-custom a {
   color: #ffffff !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 /* Buttons */
