@@ -34,12 +34,23 @@
 
         <hr>
 
-
-        <?php if (isset($_GET['message'])): ?>
-          <div class="alert alert-info">
-         <?php echo htmlspecialchars($_GET['message']); ?>
-          </div>
+        <!-- Display messages -->
+           <?php if (isset($_GET['message'])): ?>
+            <?php
+                $type       = $_GET['type'] ?? 'info'; // default to info
+                $alertClass = match ($type) {
+                    'success' => 'alert-success',
+                    'error'   => 'alert-danger',
+                    default   => 'alert-info',
+                };
+            ?>
+            <div class="alert <?php echo $alertClass; ?>">
+                <?php echo htmlspecialchars($_GET['message']); ?>
+            </div>
         <?php endif; ?>
+
+
+     
 
         <table class="table table-bordered mt-3">
             <thead class="table-light">
