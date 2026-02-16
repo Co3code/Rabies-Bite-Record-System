@@ -13,12 +13,19 @@ if (isset($_POST['id'])) {
 
         exit();
     }
+    // Prepare and execute deletion
     $stmt = mysqli_prepare($conn, "DELETE FROM users WHERE id = ?");
     mysqli_stmt_bind_param($stmt, "i", $user_id);
-    mysqli_stmt_execute($stmt);
-     header("Location: index.php?message=" . urlencode("User deleted successfuly."));
+
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location: index.php?message=" . urlencode("User deleted successfully.") . "&type=success");
+    } else {
+        header("Location: index.php?message=" . urlencode("Failed to delete user.") . "&type=error");
+    }
+    mysqli_stmt_close($stmt);
     exit();
-}else{
-    header("location: index.php");
+} else {
+    // No ID provided
+    header("Location: index.php?message=" . urlencode("No user selected for deletion.") . "&type=error");
     exit();
 }
