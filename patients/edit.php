@@ -1,7 +1,8 @@
 <?php
     require "../config/db.php";
     require "../config/auth.php"; // login required only
-
+    $pageTitle = "Edit Patient";
+    include '../header.php';
     // Check patient ID
     if (! isset($_GET['id']) || ! is_numeric($_GET['id'])) {
     header("Location: index.php");
@@ -83,7 +84,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit Patient</title>
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>

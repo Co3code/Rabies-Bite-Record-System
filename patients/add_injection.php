@@ -1,7 +1,8 @@
 <?php
     require "../config/db.php";
     require "../config/auth.php"; // login required
-
+    $pageTitle = "Add Injection";
+    include 'header.php';
     // Check patient ID
     if (! isset($_GET['patient_id']) || ! is_numeric($_GET['patient_id'])) {
     header("Location: index.php");
@@ -66,7 +67,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Injection</title>
+    Add Injection
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>

@@ -1,7 +1,10 @@
 <?php
     require "../config/db.php";
     require "../config/auth.php"; // only login required (not admin only)
+    $pageTitle = "Patients";
+    include '../header.php';
 
+    
     // Search logic
     $search = "";
 
@@ -32,7 +35,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Patients</title>
+
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>

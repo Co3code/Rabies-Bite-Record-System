@@ -1,6 +1,8 @@
 <?php
     require "../config/db.php";
     require "../config/auth.php"; // login required only
+    $pageTitle = " Add Patient";
+    include '../header.php';
 
     // Generate CSRF token
     if (empty($_SESSION['csrf_token'])) {
@@ -58,7 +60,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Patient</title>
+
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>

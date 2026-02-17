@@ -1,7 +1,6 @@
 <?php
 require "../config/db.php";
 require "../config/auth.php";
-
 require_admin(); // Only admin can delete
 
 if (! isset($_GET['id']) || ! is_numeric($_GET['id'])) {
