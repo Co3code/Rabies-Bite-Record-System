@@ -1,6 +1,8 @@
 <?php
     require "../config/db.php";
     require "../config/auth.php";
+    $pageTitle = "User Management";
+    include '../header.php';
 
     require_admin(); // Only admin allowed
 
@@ -11,7 +13,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Management</title>
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -50,7 +51,7 @@
         <?php endif; ?>
 
 
-     
+
 
         <table class="table table-bordered mt-3">
             <thead class="table-light">
@@ -75,8 +76,15 @@
                         <?php endif; ?>
                     </td>
                     <td>
-                        <!-- delete form-->
-                         <form action="delete.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                         <div class="d-flex justify-content-center gap-1">
+                             <!-- Edit button -->
+                            <a href="edit.php?id=<?php echo $row['id']; ?>"
+                            class="btn btn-sm btn-custom"
+                            style="min-width: 80px;">
+                            Edit
+                            </a>
+                                <!-- delete form-->
+                             <form action="delete.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
                             <input type="hidden" name="id"  value="<?php echo $row['id']; ?>">
                             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
 
