@@ -1,6 +1,9 @@
 <?php
     session_start();
 
+    $pageTitle = "Rabies Bite Record System - Login";
+    include '../header.php';
+
     // Redirect if already logged in
     if (isset($_SESSION['user_id'])) {
     header("Location: ../dashboard.php");
@@ -16,7 +19,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rabies Bite Record System - Login</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
     <style>
