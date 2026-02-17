@@ -2,6 +2,11 @@
     require "config/db.php";
     require "config/auth.php";
 
+    //  Set page title first
+    $pageTitle = "Dashboard.php";
+    //  Include header after title is set
+    include 'header.php';
+
     date_default_timezone_set('Asia/Manila');
     // Protect page
     if (! isset($_SESSION['user_id'])) {
@@ -114,7 +119,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
