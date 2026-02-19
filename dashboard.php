@@ -164,21 +164,21 @@
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card card-custom p-3 text-center">
-                <h5>Total Patients</h5>
+                <h5>Patients</h5>
                 <h2><?php echo $total_patients; ?></h2>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
             <div class="card card-custom p-3 text-center">
-                <h5>Total Bites</h5>
+                <h5> Bites Cases</h5>
                 <h2><?php echo $total_bites; ?></h2>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
             <div class="card card-custom p-3 text-center">
-                <h5>Total Injections</h5>
+                <h5>Injections</h5>
                 <h2><?php echo $total_injections; ?></h2>
             </div>
         </div>
